@@ -9,10 +9,10 @@ var DefaultPasswordCharset = struct {
 	SMALL   : "abcdefghijklmnopqrstuvwxyz",
 	BIG     : "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
 	NUMBER : "0123456789",
-	SPECIAL : "!@#$%^&*()_=+[]|;.?",
+	SPECIAL : "!@#$%&*()=[]|;?",
 }
 
 var CROCKFORD_BASE32 = []byte("0123456789ABCDEFGHJKMNPQRSTVWXYZ")
 
 var USERNAME_SET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-var PASSWORD_SET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+"
+var PASSWORD_SET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*()=[]|;?"

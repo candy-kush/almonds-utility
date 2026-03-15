@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -103,8 +106,7 @@ func main() {
 	utilService := service.NewUtilityService(mySql, cache)
 	utilHandler := handlers.NewUtilityHandler(utilService)
 
-	BASE_PATH := os.Getenv("BASE_PATH")
-	api := router.Group(BASE_PATH)
+	api := router.Group("/apis")
 
 	// Routes
 	v1 := api.Group("/v1/utils", middleware.AuthMiddleware(mySql, cache))
@@ -125,8 +127,45 @@ func main() {
 	}
 
 	SERVER_PORT := os.Getenv("SERVER_PORT")
-	slog.Info("Starting server on PORT " + SERVER_PORT)
-	router.Run(":" + SERVER_PORT)
+	if SERVER_PORT == "" {
+		SERVER_PORT = "8080"
+	}
+
+	// Create HTTP server
+	server := &http.Server{
+		Addr:    ":" + SERVER_PORT,
+		Handler: router, // your gin router
+	}
+
+	// Start server in goroutine
+	go func() {
+		slog.Info("Starting server on PORT " + SERVER_PORT)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			slog.Error("Server failed", "error", err)
+			os.Exit(1)
+		}
+	}()
+
+	// Create shutdown channel
+	quit := make(chan os.Signal, 1)
+
+	// Listen for SIGINT (Ctrl+C) and SIGTERM (Docker/K8s stop)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+
+	<-quit // Block until signal received
+
+	slog.Info("Shutdown signal received. Gracefully shutting down...")
+
+	// Timeout context for shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Attempt graceful shutdown
+	if err := server.Shutdown(ctx); err != nil {
+		slog.Error("Forced to shutdown", "error", err)
+	}
+
+	slog.Info("Server exiting properly")
 }
 
 // go build -ldflags="-X main.BuildVersion=1.0.4" -o bin/lothbrokutils cmd/server/main.go
