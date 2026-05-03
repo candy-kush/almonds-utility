@@ -55,7 +55,7 @@ func InitLogger(version string) {
 
 	// logPath := os.Getenv("LOG_PATH")
 	// if logPath == "" {
-	// 	logPath = "/var/log/almonds/gobins/lothbrokutils/lothbrokutils.log.out"
+	// 	logPath = "/opt/logs/almonds-utility/almonds-utility.out"
 	// }
 
 	// maxSize := getEnvAsInt("LOG_MAX_SIZE", 20)       // MB

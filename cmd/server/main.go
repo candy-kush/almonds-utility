@@ -168,4 +168,4 @@ func main() {
 	slog.Info("Server exiting properly")
 }
 
-// go build -ldflags="-X main.BuildVersion=1.0.4" -o bin/lothbrokutils cmd/server/main.go
+// go build -ldflags="-X main.BuildVersion=1.0.4" -o bin/almonds-utility cmd/server/main.go
